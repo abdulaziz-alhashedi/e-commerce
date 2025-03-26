@@ -1,0 +1,76 @@
+models:
+  Customer:
+    name: string
+    email: string
+    phone: string nullable
+    address: text nullable
+    city: string nullable
+    state: string nullable
+    zip: string nullable
+    country: string nullable
+    status: boolean default:true
+    email_verified_at: timestamp nullable
+    password: string
+    remember_token: string:100 nullable
+    timestamps: true
+    softDeletes: true
+    relationships:
+      hasMany: Order
+
+  Order:
+    customer_id: id foreign:customers
+    order_number: string
+    status: string
+    total: decimal:10,2
+    tax: decimal:10,2
+    shipping_cost: decimal:10,2
+    shipping_address: text
+    shipping_city: string
+    shipping_state: string
+    shipping_zip: string
+    shipping_country: string
+    notes: text nullable
+    timestamps: true
+    softDeletes: true
+    relationships:
+      belongsTo: Customer
+      hasMany: OrderItem
+
+  Product:
+    category_id: id foreign:categories
+    name: string
+    slug: string unique
+    description: text nullable
+    price: decimal:10,2
+    sale_price: decimal:10,2 nullable
+    stock: integer
+    sku: string unique
+    is_active: boolean default:true
+    timestamps: true
+    softDeletes: true
+    relationships:
+      belongsTo: Category
+      hasMany: OrderItem
+
+  Category:
+    name: string
+    slug: string unique
+    description: text nullable
+    parent_id: id foreign:categories nullable
+    is_active: boolean default:true
+    timestamps: true
+    softDeletes: true
+    relationships:
+      hasMany: Product
+      belongsTo: Category parent
+
+  OrderItem:
+    order_id: id foreign:orders
+    product_id: id foreign:products
+    quantity: integer
+    unit_price: decimal:10,2
+    total: decimal:10,2
+    timestamps: true
+    relationships:
+      belongsTo: Order, Product
+
