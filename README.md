@@ -1,66 +1,182 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Laravel Project with Filament & Blueprint
 
-## About Laravel
+This project is built using Laravel, enhanced with Filament for admin panel generation and Blueprint for rapid development. Here's how to get started and make the most of these powerful tools.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prerequisites
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.1 or higher
+- Composer
+- Node.js & NPM
+- MySQL or PostgreSQL
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Project Setup
 
-## Learning Laravel
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Install PHP dependencies:
+```bash
+composer install
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. Install NPM packages:
+```bash
+npm install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. Set up environment:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+5. Configure your database in `.env` file:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+6. Run migrations:
+```bash
+php artisan migrate
+```
 
-### Premium Partners
+## Using Blueprint for Development
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Blueprint accelerates development by generating code from YAML definitions.
+
+1. Define your models in `draft.yaml`:
+```yaml
+models:
+  Post:
+    title: string
+    content: text
+    published_at: timestamp nullable
+    relationships:
+      belongsTo: User
+```
+
+2. Generate code:
+```bash
+php artisan blueprint:build
+```
+
+This will create:
+- Model
+- Migration
+- Factory
+- Controller
+- Form Requests
+
+## Working with Filament
+
+Filament provides a powerful admin panel interface.
+
+1. Create a resource:
+```bash
+php artisan make:filament-resource Post
+```
+
+2. Customize the resource in `app/Filament/Resources/PostResource.php`
+
+3. Access the admin panel at: `http://your-app.test/admin`
+
+### Common Filament Patterns
+
+1. Form Fields:
+```php
+public static function form(Form $form): Form
+{
+    return $form->schema([
+        Forms\Components\TextInput::make('title'),
+        Forms\Components\RichEditor::make('content'),
+        Forms\Components\DateTimePicker::make('published_at'),
+    ]);
+}
+```
+
+2. Table Columns:
+```php
+public static function table(Table $table): Table
+{
+    return $table->columns([
+        Tables\Columns\TextColumn::make('title'),
+        Tables\Columns\TextColumn::make('published_at'),
+    ]);
+}
+```
+
+## Development Workflow
+
+1. Define models and relationships in `draft.yaml`
+2. Generate code with Blueprint
+3. Create Filament resources for admin interface
+4. Customize generated code as needed
+5. Add business logic and custom features
+
+## Running the Application
+
+1. Start the development server:
+```bash
+php artisan serve
+```
+
+2. Compile assets:
+```bash
+npm run dev
+```
+
+3. Access the application:
+- Main site: `http://localhost:8000`
+- Admin panel: `http://localhost:8000/admin`
+
+## Best Practices
+
+1. **Blueprint**
+- Keep `draft.yaml` updated
+- Review generated code
+- Use seeders for test data
+
+2. **Filament**
+- Organize resources logically
+- Use widgets for dashboards
+- Implement proper authorization
+
+3. **General**
+- Follow Laravel conventions
+- Write tests for custom features
+- Use Git for version control
+
+## Useful Commands
+
+```bash
+# Blueprint
+php artisan blueprint:build    # Generate code
+php artisan blueprint:erase    # Remove generated code
+php artisan blueprint:trace    # Show what will be generated
+
+# Filament
+php artisan make:filament-resource    # Create resource
+php artisan make:filament-widget      # Create widget
+
+# Laravel
+php artisan migrate:fresh --seed      # Reset database
+php artisan test                      # Run tests
+```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and development process.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
