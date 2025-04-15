@@ -1,182 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel E-Commerce Project
 
-# Laravel Project with Filament & Blueprint
+A modern, scalable e-commerce platform built with Laravel, Filament, and Blueprint.
 
-This project is built using Laravel, enhanced with Filament for admin panel generation and Blueprint for rapid development. Here's how to get started and make the most of these powerful tools.
+## Overview
 
-## Prerequisites
+This e-commerce platform provides a complete solution for online retail businesses. It features a customer-facing storefront, a comprehensive admin panel, and a robust API for headless commerce and integrations.
 
-- PHP 8.1 or higher
-- Composer
-- Node.js & NPM
-- MySQL or PostgreSQL
+## Features
 
-## Project Setup
+- **Product Management**: Handle products, variants, categories, and inventory
+- **Order Processing**: Complete order lifecycle from cart to fulfillment
+- **Customer Management**: User accounts, profiles, and purchase history
+- **Content Management**: Dynamic content for marketing and SEO
+- **Payment Integration**: Multiple payment gateway options
+- **Analytics & Reporting**: Sales, inventory, and customer insights
+- **API Support**: RESTful API for headless commerce and integrations
+- **Admin Dashboard**: Powered by Filament for easy management
 
-1. Clone the repository:
+## Tech Stack
+
+- **Backend**: Laravel 12, PHP 8.2+
+- **Admin Panel**: Filament
+- **Database**: MySQL/PostgreSQL
+- **Frontend**: Blade templates, Alpine.js, Tailwind CSS
+- **API**: RESTful with JSON:API specification
+- **Development**: Blueprint for rapid development
+- **Testing**: PHPUnit, Pest, and browser testing
+
+## Documentation
+
+Complete project documentation is available in the following files:
+
+- [E-Commerce Roadmap](./Docs-Ecommerce/ECOMMERCE-ROADMAP.md) - Project development roadmap and plan
+- [Architecture](./Docs-Ecommerce/ARCHITECTURE.md) - System architecture and design patterns
+- [API Documentation](./Docs-Ecommerce/API-DOCUMENTATION.md) - API endpoints and usage guide
+- [Developer Setup](./Docs-Ecommerce/DEVELOPER-SETUP.md) - Guide for setting up development environment
+
+## Getting Started
+
+For detailed setup instructions, refer to the [Developer Setup Guide](./Docs-Ecommerce/DEVELOPER-SETUP.md).
+
+Quick start:
+
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd <project-directory>
-```
 
-2. Install PHP dependencies:
-```bash
+# Install dependencies
 composer install
-```
-
-3. Install NPM packages:
-```bash
 npm install
-```
 
-4. Set up environment:
-```bash
+# Configure environment
 cp .env.example .env
 php artisan key:generate
-```
 
-5. Configure your database in `.env` file:
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=your_database
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-```
+# Set up database
+php artisan migrate --seed
 
-6. Run migrations:
-```bash
-php artisan migrate
-```
-
-## Using Blueprint for Development
-
-Blueprint accelerates development by generating code from YAML definitions.
-
-1. Define your models in `draft.yaml`:
-```yaml
-models:
-  Post:
-    title: string
-    content: text
-    published_at: timestamp nullable
-    relationships:
-      belongsTo: User
-```
-
-2. Generate code:
-```bash
-php artisan blueprint:build
-```
-
-This will create:
-- Model
-- Migration
-- Factory
-- Controller
-- Form Requests
-
-## Working with Filament
-
-Filament provides a powerful admin panel interface.
-
-1. Create a resource:
-```bash
-php artisan make:filament-resource Post
-```
-
-2. Customize the resource in `app/Filament/Resources/PostResource.php`
-
-3. Access the admin panel at: `http://your-app.test/admin`
-
-### Common Filament Patterns
-
-1. Form Fields:
-```php
-public static function form(Form $form): Form
-{
-    return $form->schema([
-        Forms\Components\TextInput::make('title'),
-        Forms\Components\RichEditor::make('content'),
-        Forms\Components\DateTimePicker::make('published_at'),
-    ]);
-}
-```
-
-2. Table Columns:
-```php
-public static function table(Table $table): Table
-{
-    return $table->columns([
-        Tables\Columns\TextColumn::make('title'),
-        Tables\Columns\TextColumn::make('published_at'),
-    ]);
-}
-```
-
-## Development Workflow
-
-1. Define models and relationships in `draft.yaml`
-2. Generate code with Blueprint
-3. Create Filament resources for admin interface
-4. Customize generated code as needed
-5. Add business logic and custom features
-
-## Running the Application
-
-1. Start the development server:
-```bash
+# Start development server
 php artisan serve
-```
-
-2. Compile assets:
-```bash
 npm run dev
 ```
 
-3. Access the application:
-- Main site: `http://localhost:8000`
-- Admin panel: `http://localhost:8000/admin`
+## Project Structure Overview
 
-## Best Practices
+- `app/` - Application code
+  - `Http/Controllers/` - Web and API controllers
+  - `Models/` - Eloquent models
+  - `Filament/` - Admin panel resources
+  - `Services/` - Business logic services
+- `database/` - Migrations and seeders
+- `resources/` - Frontend assets and views
+- `routes/` - Web and API routes
+- `tests/` - Test suites
 
-1. **Blueprint**
-- Keep `draft.yaml` updated
-- Review generated code
-- Use seeders for test data
+## Development Workflow
 
-2. **Filament**
-- Organize resources logically
-- Use widgets for dashboards
-- Implement proper authorization
+This project leverages Blueprint for rapid development:
 
-3. **General**
-- Follow Laravel conventions
-- Write tests for custom features
-- Use Git for version control
+1. Define models and relationships in `draft.yaml`
+2. Generate code with `php artisan blueprint:build`
+3. Customize the generated code as needed
+4. Create Filament resources for the admin interface
 
-## Useful Commands
-
-```bash
-# Blueprint
-php artisan blueprint:build    # Generate code
-php artisan blueprint:erase    # Remove generated code
-php artisan blueprint:trace    # Show what will be generated
-
-# Filament
-php artisan make:filament-resource    # Create resource
-php artisan make:filament-widget      # Create widget
-
-# Laravel
-php artisan migrate:fresh --seed      # Reset database
-php artisan test                      # Run tests
-```
+For API development, follow the standards outlined in the [API Documentation](./API-DOCUMENTATION.md).
 
 ## Contributing
 
-Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and development process.
+Please read our [Contributing Guidelines](./CONTRIBUTING.md) before submitting pull requests. All contributions should follow the established coding standards and include appropriate tests.
+
+## Team Collaboration
+
+- Use feature branches for development
+- Submit pull requests for code review
+- Use GitHub/GitLab issues for task tracking
+- Follow the established coding standards
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](./LICENSE). 
