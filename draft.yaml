@@ -1,76 +1,251 @@
 models:
-  Customer:
+  User:
     name: string
-    email: string
+    email: string unique
+    email_verified_at: timestamp nullable
+    password: string
+    phone_number: string nullable
+    role: enum:customer,vendor,admin,super_admin default:customer
+    remember_token: string nullable
+    timestamps: true
+    relationships:
+      hasMany: UserAddress, Order, Review, Wishlist
+      hasOne: Shop
+
+  Shop:
+    user_id: id foreign unique
+    name: string
+    slug: string unique
+    description: text nullable
+    logo: string nullable
+    banner: string nullable
+    email: string nullable
     phone: string nullable
     address: text nullable
     city: string nullable
     state: string nullable
-    zip: string nullable
+    postal_code: string nullable
     country: string nullable
-    status: boolean default:true
-    email_verified_at: timestamp nullable
-    password: string
-    remember_token: string:100 nullable
+    status: enum:pending,active,inactive default:pending
+    commission_rate: decimal:5,2 default:0
+    is_featured: boolean default:false
+    meta_title: string nullable
+    meta_description: text nullable
     timestamps: true
-    softDeletes: true
     relationships:
-      hasMany: Order
+      hasMany: Product, Order
 
-  Order:
-    customer_id: id foreign:customers
-    order_number: string
-    status: string
-    total: decimal:10,2
-    tax: decimal:10,2
-    shipping_cost: decimal:10,2
-    shipping_address: text
-    shipping_city: string
-    shipping_state: string
-    shipping_zip: string
-    shipping_country: string
-    notes: text nullable
+  UserAddress:
+    user_id: id foreign
+    address_line_1: string
+    address_line_2: string nullable
+    city: string
+    state: string
+    postal_code: string
+    country: string
+    phone: string nullable
+    is_default: boolean default:false
+    type: enum:billing,shipping default:shipping
     timestamps: true
-    softDeletes: true
-    relationships:
-      belongsTo: Customer
-      hasMany: OrderItem
-
-  Product:
-    category_id: id foreign:categories
-    name: string
-    slug: string unique
-    description: text nullable
-    price: decimal:10,2
-    sale_price: decimal:10,2 nullable
-    stock: integer
-    sku: string unique
-    is_active: boolean default:true
-    timestamps: true
-    softDeletes: true
-    relationships:
-      belongsTo: Category
-      hasMany: OrderItem
-
+    
   Category:
     name: string
     slug: string unique
     description: text nullable
+    image_path: string nullable
     parent_id: id foreign:categories nullable
     is_active: boolean default:true
+    sort_order: integer default:0
     timestamps: true
-    softDeletes: true
     relationships:
-      hasMany: Product
-      belongsTo: Category parent
+      belongsToMany: Product
+
+  Product:
+    name: string
+    slug: string unique
+    description: text nullable
+    short_description: text nullable
+    price: decimal:10,2
+    compare_price: decimal:10,2 nullable
+    cost: decimal:10,2 nullable
+    sku: string unique
+    barcode: string nullable
+    quantity: integer default:0
+    is_active: boolean default:true
+    is_featured: boolean default:false
+    is_digital: boolean default:false
+    digital_file_path: string nullable
+    weight: decimal:8,2 nullable
+    width: decimal:8,2 nullable
+    height: decimal:8,2 nullable
+    length: decimal:8,2 nullable
+    weight_unit: enum:g,kg,lb,oz default:g
+    dimension_unit: enum:cm,m,in,ft default:cm
+    shop_id: id foreign nullable
+    is_approved: boolean default:false
+    approval_status: enum:pending,approved,rejected default:pending
+    rejection_reason: text nullable
+    timestamps: true
+    relationships:
+      belongsToMany: Category
+      hasMany: ProductImage, ProductVariant, CartItem, OrderItem, Review, WishlistItem
+      belongsTo: Shop
+
+  ProductImage:
+    product_id: id foreign
+    path: string
+    alt_text: string nullable
+    is_primary: boolean default:false
+    sort_order: integer default:0
+    timestamps: true
+
+  Attribute:
+    name: string
+    code: string unique
+    type: enum:select,radio,text,number,boolean default:select
+    is_filterable: boolean default:false
+    is_required: boolean default:false
+    timestamps: true
+    relationships:
+      hasMany: AttributeValue
+
+  AttributeValue:
+    attribute_id: id foreign
+    value: string
+    timestamps: true
+    relationships:
+      belongsToMany: Product, ProductVariant
+
+  ProductVariant:
+    product_id: id foreign
+    name: string
+    sku: string unique
+    price: decimal:10,2
+    quantity: integer default:0
+    is_active: boolean default:true
+    timestamps: true
+    relationships:
+      belongsToMany: AttributeValue
+      hasMany: CartItem, OrderItem
+
+  Cart:
+    user_id: id foreign:users nullable
+    session_id: string nullable
+    timestamps: true
+    relationships:
+      hasMany: CartItem
+
+  CartItem:
+    cart_id: id foreign
+    product_id: id foreign
+    product_variant_id: id foreign:product_variants nullable
+    quantity: integer
+    timestamps: true
+    
+  Order:
+    order_number: string unique
+    user_id: id foreign:users nullable
+    shop_id: id foreign:shops nullable
+    status: enum:pending,processing,completed,declined,cancelled,refunded,on_hold default:pending
+    subtotal: decimal:10,2
+    tax: decimal:10,2 default:0
+    shipping: decimal:10,2 default:0
+    discount: decimal:10,2 default:0
+    total: decimal:10,2
+    payment_method: string nullable
+    payment_status: enum:pending,paid,failed,refunded default:pending
+    notes: text nullable
+    paid_at: timestamp nullable
+    commission_calculated: boolean default:false
+    timestamps: true
+    relationships:
+      hasMany: OrderItem, OrderAddress, Payment
+      belongsTo: Shop
 
   OrderItem:
-    order_id: id foreign:orders
-    product_id: id foreign:products
+    order_id: id foreign
+    product_id: id foreign
+    product_variant_id: id foreign:product_variants nullable
+    shop_id: id foreign:shops nullable
+    name: string
+    sku: string
     quantity: integer
-    unit_price: decimal:10,2
-    total: decimal:10,2
+    price: decimal:10,2
+    subtotal: decimal:10,2
+    commission_amount: decimal:10,2 default:0
+    options: json nullable
+    timestamps: true
+
+  OrderAddress:
+    order_id: id foreign
+    type: enum:billing,shipping
+    first_name: string
+    last_name: string
+    address_line_1: string
+    address_line_2: string nullable
+    city: string
+    state: string
+    postal_code: string
+    country: string
+    phone: string nullable
+    email: string nullable
+    timestamps: true
+
+  Payment:
+    order_id: id foreign
+    transaction_id: string nullable
+    amount: decimal:10,2
+    payment_method: string
+    status: enum:pending,completed,failed,refunded default:pending
+    payment_details: json nullable
+    timestamps: true
+
+  Coupon:
+    code: string unique
+    type: enum:percentage,fixed default:percentage
+    value: decimal:10,2
+    minimum_spend: decimal:10,2 nullable
+    maximum_discount: decimal:10,2 nullable
+    is_active: boolean default:true
+    starts_at: timestamp nullable
+    expires_at: timestamp nullable
+    usage_limit: integer nullable
+    usage_count: integer default:0
+    shop_id: id foreign:shops nullable
+    is_global: boolean default:false
+    timestamps: true
+
+  Review:
+    user_id: id foreign
+    product_id: id foreign
+    order_id: id foreign:orders nullable
+    rating: tinyInteger
+    comment: text nullable
+    is_approved: boolean default:false
+    timestamps: true
+
+  Wishlist:
+    user_id: id foreign
     timestamps: true
     relationships:
-      belongsTo: Order, Product
+      hasMany: WishlistItem
+
+  WishlistItem:
+    wishlist_id: id foreign
+    product_id: id foreign
+    timestamps: true
+    
+  Withdrawal:
+    shop_id: id foreign
+    amount: decimal:10,2
+    status: enum:pending,approved,completed,rejected default:pending
+    payment_method: string
+    bank_name: string nullable
+    account_name: string nullable
+    account_number: string nullable
+    routing_number: string nullable
+    swift_code: string nullable
+    notes: text nullable
+    processed_at: timestamp nullable
+    timestamps: true
 
